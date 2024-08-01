@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Поиск городов</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+
+        #map { height: 1500px; }
+
+        .leaflet-control-attribution {
+        display: none; /* Убирает атрибуцию Leaflet */
+    }
+    
+    </style>
+</head>
+<body>
+
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Создаем карту
+        var map = L.map('map').setView([47.426405009634955, 36.1415604682153], 8);;
+
+        // Добавляем слой с картой CartoDB Positron без подписей
+        var CartoDB_PositronNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+            subdomains: 'abcd',
+            maxZoom: 11,
+            minZoom: 8
+        }).addTo(map);
+
+
+
+        var geojsonUrl = 'uk.geojson'; // Обновите путь в зависимости от расположения вашего файла
+
+        // Загружаем и добавляем GeoJSON на карту
+        fetch(geojsonUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Создаем слой из GeoJSON
+                var geoJsonLayer = L.geoJSON(data, {
+                    style: {
+                        color: 'black', // Цвет контура полигона
+                        fillColor: 'lightblue', // Цвет заливки полигона
+                        fillOpacity: 0 // Прозрачность заливки полигона
+                    }
+                }).addTo(map);
+
+            })
+
+
+
+            var geojsonUrl1 = 'uk_ramka.geojson'; // Обновите путь в зависимости от расположения вашего файла
+            
+            fetch(geojsonUrl1)
+                .then(response => response.json())
+                .then(data => {
+                    // Создаем слой из GeoJSON
+                    var geoJsonLayer = L.geoJSON(data, {
+                        style: {
+                            color: 'black', // Цвет контура полигона
+                            fillColor: 'white', // Цвет заливки полигона
+                            fillOpacity: 1 // Прозрачность заливки полигона
+                        }
+                    }).addTo(map);
+                });
+
+
+                
+            var citiesGeojsonUrl = 'city_test.geojson';
+
+            // Переменная для хранения данных GeoJSON
+            var cityData = null;
+
+            // Слой для отображения найденных маркеров
+            var searchLayer = L.layerGroup().addTo(map);
+
+            // Загрузка данных GeoJSON
+            fetch(citiesGeojsonUrl)
+                .then(response => response.json())
+                .then(data => {
+                    cityData = data; // Сохраняем данные в переменную
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки GeoJSON с городами:', error);
+                });
+
+            // Функция поиска
+            function searchPlace() {
+                var searchTerm = prompt("Введите название населенного пункта:");
+                if (searchTerm && cityData) {
+                    var found = false;
+
+                    // Поиск по данным
+                    cityData.features.forEach(function(feature) {
+                        if (feature.properties.name.toLowerCase() === searchTerm.toLowerCase()) {
+                            var latLng = L.latLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
+                            L.marker(latLng)
+                                .bindPopup(feature.properties.name)
+                                .addTo(searchLayer); // Добавляем маркер в searchLayer
+                            map.setView(latLng, 10);
+                            found = true;
+                        }
+                    });
+
+                    if (!found) {
+                        alert("Населенный пункт не найден");
+                    }
+                }
+            }
+
+            // Запуск поиска по клику на карте
+            map.on('click', searchPlace);
+
+    </script>
+</body>
+</html>
