@@ -34,7 +34,7 @@
 
 
 
-        var geojsonUrl = 'uk.geojson'; // Обновите путь в зависимости от расположения вашего файла
+        var geojsonUrl = 'data/uk.geojson'; // Обновите путь в зависимости от расположения вашего файла
 
         // Загружаем и добавляем GeoJSON на карту
         fetch(geojsonUrl)
@@ -53,7 +53,7 @@
 
 
 
-            var geojsonUrl1 = 'uk_ramka.geojson'; // Обновите путь в зависимости от расположения вашего файла
+            var geojsonUrl1 = 'data/uk_ramka.geojson'; // Обновите путь в зависимости от расположения вашего файла
             
             fetch(geojsonUrl1)
                 .then(response => response.json())
@@ -70,7 +70,7 @@
 
 
                 
-            var citiesGeojsonUrl = 'city_test.geojson';
+            var citiesGeojsonUrl = 'data/city_test.geojson';
 
             // Переменная для хранения данных GeoJSON
             var cityData = null;
